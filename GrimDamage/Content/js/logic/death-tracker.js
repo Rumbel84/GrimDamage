@@ -16,7 +16,9 @@ class DeathTracker {
 
         for (let i = 0; i < events.length; i++) {
             const event = events[i];
-            if (event.event === 'Dead' || event.event === 'Dying') {
+
+            //Only pop up if respawning. not for killed enemies
+            if ( event.event === 'Respawning') { //event.event === 'Alive' || //if (event.event === 'Dead' || event.event === 'Dying') {
                 // Minor cooldown on deaths, since the alert can come multiple times
                 if (event.timestamp > this.lastDeath + this.minInterval) {
                     const entityId = this.database.getMainPlayerEntityId();
