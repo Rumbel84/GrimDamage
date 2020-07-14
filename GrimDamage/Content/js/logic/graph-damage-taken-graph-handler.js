@@ -35,9 +35,9 @@ class DamageTakenGraphLogichandler {
         //console.debug(`AddPoint(${type}, ${amount}, ${extrapolated})`);
         const chart = this.damageTakenGraph.series.filter(s => s.name === type)[0];
         if (amount > 2) {
-            chart.addPoint({ y: amount, extrapolated: extrapolated }, false, true);
+            chart.addPoint({ y: amount, extrapolated: extrapolated }, false, false); 
         } else {
-            chart.addPoint({ y: 0, extrapolated: 0 }, false, true);
+            chart.addPoint({ y: 0, extrapolated: 0 }, false, false);
         }
     }
 
@@ -91,8 +91,19 @@ class DamageTakenGraphLogichandler {
                 this.knownDamageTypes[elem.damageType] = true;
             }
 
-            // Fill in zeroes for missing types
+            //check if graph is too long and enable flushing of old values
+            let tooLong = false;
+			if (this.damageTakenGraph.series.filter(s => s.name === 'Total')[0].points.length > 10)
+			{
+				tooLong = true;
+			}
+            
+            // Fill in zeroes for missing types and flush old values if required
             for (let type in this.knownDamageTypes) {
+				if (tooLong)
+				{
+					this.damageTakenGraph.series.filter(s => s.name === type)[0].removePoint(0,false);
+				}
                 if (!damageTypesThisTurn.hasOwnProperty(type) && this.knownDamageTypes.hasOwnProperty(type)) {
                     this.addDamageTaken(type, 0, 0);
                 }
